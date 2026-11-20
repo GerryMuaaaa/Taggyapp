@@ -4,8 +4,17 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>TAGGY | Mascota encontrada</title>
+<meta name="description" content="Ayuda a esta mascota a volver a casa. Contacta a su familia con un toque.">
+<meta property="og:title" content="TAGGY | Mascota perdida: ayúdame a volver a casa">
+<meta property="og:description" content="Si encontraste a esta mascota, contacta a su familia de inmediato.">
+<meta property="og:image" content="catalino.jpg">
+<meta property="og:type" content="website">
+<meta name="robots" content="noindex,nofollow">
 <meta name="theme-color" content="#FFF8ED">
 <link rel="icon" href="taggy-logo.png">
+<link rel="apple-touch-icon" href="taggy-logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap">
 <style>
 :root{--cream:#FFF8ED;--orange:#EF8A27;--deep:#B85C14;--yellow:#F7C957;--sage:#86A79B;--blue:#9BC3CE;--coral:#D9826B;--black:#202020}
@@ -58,17 +67,27 @@ h3{font-size:1.35rem;margin-bottom:12px}
 .cm p{font-size:.9rem;line-height:1.45;margin:3px 0 6px}.cm small{opacity:.6}.s{font-size:.85rem;opacity:.75;margin:-4px 0 12px;line-height:1.4}
 .al span.diet{background:#FCE8CC;color:#8a5a14}.al span.oth{background:#E8E3F4;color:#4b3f7a}.al span.chipm{background:#DCEBF0;color:#2d6577}.an{font-size:.84rem;line-height:1.4;margin:0 0 12px 6px;opacity:.85}
 .rae{display:inline-grid;gap:4px;text-align:left;margin:8px 0 12px;font-size:.98rem}.rae span{opacity:.6;font-weight:700}
+.empty{font-size:.88rem;opacity:.65;text-align:center;padding:8px 0}
 </style>
 </head>
 <body>
 <div class="app" id="app"></div>
-<div class="toast" id="toast"></div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
 <script>
 const WEB="https://vale95uicab.github.io/Taggy/";
 const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-/* Datos de ejemplo (se reemplazan con los del enlace/NFC de cada mascota) */
+/* Datos de ejemplo (se reemplazan con los del enlace/NFC de cada mascota: #d=BASE64URL(JSON)) */
 let D={n:"Catalino",b:"Shih Tzu",a:"1 año",x:"Macho esterilizado",id:"#TG-9204",f:"catalino.jpg",i:"🐶",o:"Valentina Palomino",t:"(999) 123-4567",u:"(999) 987-6543",z:"Fracc. Los Héroes, Mérida, Yucatán",r:"Hospital IMSS cercano",al:["Alergia a la penicilina: reacción grave, avisar al veterinario","Dieta especial gastrointestinal: solo alimento indicado por su veterinario"],nt:"No ofrecer alimentos con harinas ni golosinas artificiales. Es amigable con niños y otros perros.",mc:1,rw:"$1,000 MXN",ld:"2026-11-13T17:30",lz:"Parque de Fracc. Los Héroes, Mérida"};
-try{const m=location.hash.match(/d=([^&]+)/);if(m)D={...D,rw:"",ld:"",lz:D.z,...JSON.parse(decodeURIComponent(escape(atob(m[1].replace(/-/g,"+").replace(/_/g,"/")))))}}catch(e){}
+let DEMO=true;
+try{
+  const m=location.hash.match(/d=([^&]+)/);
+  if(m){
+    let b=m[1].replace(/-/g,"+").replace(/_/g,"/");while(b.length%4)b+="=";
+    const bytes=Uint8Array.from(atob(b),c=>c.charCodeAt(0));
+    D={...D,rw:"",ld:"",lz:D.z,...JSON.parse(new TextDecoder().decode(bytes))};
+    DEMO=false;
+  }
+}catch(e){}
 const dg=s=>String(s||"").replace(/\D/g,""),full=s=>{const d=dg(s);return d.length==10?"52"+d:d};
 let tt;const toast=m=>{const e=document.getElementById("toast");e.textContent=m;e.classList.add("on");clearTimeout(tt);tt=setTimeout(()=>e.classList.remove("on"),3000)};
 const msg=l=>`Hola, encontré a ${D.n} 🐾 (collar TAGGY ${D.id}).`+(l?` Estoy aquí: https://maps.google.com/?q=${l}`:"");
@@ -79,6 +98,7 @@ const kind=t=>/alerg/i.test(t)?"":/dieta|aliment|comida/i.test(t)?"diet":"oth";
 const alRows=(D.al||[]).map(a=>{const [t,...r]=String(a).split(":"),n=r.join(":").trim();return `<div class="al" style="margin-bottom:4px"><span class="${kind(t)}">${/alerg/i.test(t)?"⚠":"●"} ${esc(t.trim())}</span></div>${n?`<div class="an">${esc(n)}</div>`:""}`}).join("");
 const pic=D.f?`<img src="${esc(D.f)}" alt="${esc(D.n)}" onerror="this.outerHTML='<div class=em>${esc(D.i||"🐶")}</div>'">`:`<div class="em">${esc(D.i||"🐶")}</div>`;
 const phone=(l,n)=>n?`<div class="box ph"><div><div class="lab">${l}</div><strong>+52 ${esc(n)}</strong></div><a href="tel:+${full(n)}" aria-label="Llamar">📞</a></div>`:"";
+document.title=`TAGGY | ${D.n} está perdido`;
 document.getElementById("app").innerHTML=`
 <div class="sos">🚨 ¡ESTOY PERDIDO!</div>
 <div class="top"><img src="taggy-logo.png" alt="TAGGY"><span class="tag">ID: ${esc(D.id)}</span></div>
@@ -108,12 +128,14 @@ document.getElementById("app").innerHTML=`
 </div>
 <div class="foot">TAGGY · Una nueva forma de volver a casa</div>`;
 
-/* ===== Foro de avistamientos (comentarios de ejemplo; los nuevos se guardan en este dispositivo) ===== */
+/* ===== Foro de avistamientos =====
+   Los comentarios de ejemplo solo aparecen en la demo (sin #d=...).
+   Los nuevos se guardan solo en el dispositivo de quien los publica. */
 const AVK="taggyAv_"+D.id;
-const SEED=[{n:"Mariana R.",z:"Parque de Los Héroes, Mérida",c:`Vi a ${D.n} hace rato caminando solito, sin correa. Se veía asustado.`,w:"hace 2 h"},{n:"Luis P.",z:"Periférico, Mérida",c:"Creo que cruzó hacia una calle privada. Intenté seguirlo pero lo perdí de vista.",w:"hace 5 h"},{n:"Ana G.",z:"Colonia Los Héroes",c:"Ya lo compartí en el grupo de vecinos. Avisen si lo encuentran 🐾",w:"ayer"}];
+const SEED=DEMO?[{n:"Mariana R.",z:"Parque de Los Héroes, Mérida",c:`Vi a ${D.n} hace rato caminando solito, sin correa. Se veía asustado.`,w:"hace 2 h"},{n:"Luis P.",z:"Periférico, Mérida",c:"Creo que cruzó hacia una calle privada. Intenté seguirlo pero lo perdí de vista.",w:"hace 5 h"},{n:"Ana G.",z:"Colonia Los Héroes",c:"Ya lo compartí en el grupo de vecinos. Avisen si lo encuentran 🐾",w:"ayer"}]:[];
 let mine=[];try{mine=JSON.parse(localStorage.getItem(AVK))||[]}catch(e){}
-function renderAv(){const all=[...mine,...SEED];document.getElementById("avCount").textContent="· "+all.length+" avistamientos";
- document.getElementById("avList").innerHTML=all.map(x=>`<div class="cm"><div class="avt">${esc((x.n||"A")[0].toUpperCase())}</div><div><strong>${esc(x.n||"Alguien")}</strong> <small>· ${esc(x.w)}</small><p>${esc(x.c||"Lo vi por aquí.")}</p><a class="lnk" target="_blank" rel="noopener" href="https://maps.google.com/?q=${encodeURIComponent(x.z)}">📍 ${esc(x.z)}</a></div></div>`).join("")}
+function renderAv(){const all=[...mine,...SEED];document.getElementById("avCount").textContent=all.length?"· "+all.length+" avistamientos":"";
+ document.getElementById("avList").innerHTML=all.length?all.map(x=>`<div class="cm"><div class="avt">${esc((x.n||"A")[0].toUpperCase())}</div><div><strong>${esc(x.n||"Alguien")}</strong> <small>· ${esc(x.w)}</small><p>${esc(x.c||"Lo vi por aquí.")}</p><a class="lnk" target="_blank" rel="noopener" href="https://maps.google.com/?q=${encodeURIComponent(x.z)}">📍 ${esc(x.z)}</a></div></div>`).join(""):`<div class="empty">Aún no hay avistamientos. ¡Sé el primero en avisar!</div>`}
 function addAv(e,notify){e.preventDefault();const f=document.getElementById("avForm");if(!f.reportValidity())return;
  const z=f.z.value.trim(),c=f.c.value.trim(),n=f.n.value.trim();mine.unshift({n,z,c,w:"ahora"});
  try{localStorage.setItem(AVK,JSON.stringify(mine))}catch(x){}renderAv();f.reset();toast("Avistamiento publicado 🐾");
