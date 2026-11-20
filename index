@@ -74,7 +74,7 @@ h3{font-size:1.35rem;margin-bottom:12px}
 <div class="app" id="app"></div>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 <script>
-const WEB="https://vale95uicab.github.io/Taggy/";
+const WEB=location.origin+location.pathname.replace(/[^\/]*$/,"");
 const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 /* Datos de ejemplo (se reemplazan con los del enlace/NFC de cada mascota: #d=BASE64URL(JSON)) */
 let D={n:"Catalino",b:"Shih Tzu",a:"1 año",x:"Macho esterilizado",id:"#TG-9204",f:"catalino.jpg",i:"🐶",o:"Valentina Palomino",t:"(999) 123-4567",u:"(999) 987-6543",z:"Fracc. Los Héroes, Mérida, Yucatán",r:"Hospital IMSS cercano",al:["Alergia a la penicilina: reacción grave, avisar al veterinario","Dieta especial gastrointestinal: solo alimento indicado por su veterinario"],nt:"No ofrecer alimentos con harinas ni golosinas artificiales. Es amigable con niños y otros perros.",mc:1,rw:"$1,000 MXN",ld:"2026-11-13T17:30",lz:"Parque de Fracc. Los Héroes, Mérida"};
@@ -101,7 +101,7 @@ const phone=(l,n)=>n?`<div class="box ph"><div><div class="lab">${l}</div><stron
 document.title=`TAGGY | ${D.n} está perdido`;
 document.getElementById("app").innerHTML=`
 <div class="sos">🚨 ¡ESTOY PERDIDO!</div>
-<div class="top"><img src="taggy-logo.png" alt="TAGGY"><span class="tag">ID: ${esc(D.id)}</span></div>
+<div class="top"><img src="taggy-logo.png" alt="TAGGY" onerror="this.replaceWith(Object.assign(document.createElement('b'),{className:'b',textContent:'TAGGY'}))"><span class="tag">ID: ${esc(D.id)}</span></div>
 <div class="wrap">
  <div class="card hero"><div class="pic">${pic}<span class="chip"><i>●</i> PERDIDO · AYÚDAME A VOLVER A CASA</span></div>
   <h1>${esc(D.n)} 🐾</h1><div class="rae"><div><span>Raza:</span> <b>${esc(D.b)}</b></div><div><span>Edad:</span> <b>${esc(D.a)}</b></div></div>
